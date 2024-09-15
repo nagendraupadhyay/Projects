@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+data = []
+with open('pima.tr', 'r') as file:
+    for line in file:
+        row = line.strip().split()
+        data.append([float(val) if i != len(row) - 1 else val for i, val in enumerate(row)])
+
+columns = ['npreg', 'glu', 'bp', 'bmi', 'ped', 'age', 'type']
+df = pd.DataFrame(data, columns=columns)
+X = df.drop('type', axis=1)
+y = df['type']
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+tsne = TSNE(n_components=2)
+X_tsne = tsne.fit_transform(X)
+
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y.map({'Yes': 'red', 'No': 'blue'}), alpha=0.7)
+plt.title('PCA')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=y.map({'Yes': 'red', 'No': 'blue'}), alpha=0.7)
+plt.title('t-SNE')
+plt.xlabel('t-SNE Feature 1')
+plt.ylabel('t-SNE Feature 2')
+
+plt.tight_layout()
+plt.show()
